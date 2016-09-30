@@ -3,58 +3,76 @@ package pra;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+/**
+ * @author Adriano e Gustavo
+ * Classe principal que irá gerenciar o programa inteiro
+ *
+ */
 public class Main {
-	
-	private static TreeSet<Dado> arvorePrincipal;
-	private static ArrayList<String> cabecalho;
-	private static int[] valoresMaiores;
-	private static int numeroDados = 0;
 
+	private static TreeSet<Dado> arvorePrincipal;	// Árvore que conterá os dados
+	private static ArrayList<String> cabecalho;		// Cabecalho do arquivo a ser processado
+	private static int[] valoresMaiores;			// Vetor contendo os maiores tamanhos de cada item do arquivo
+	private static int numeroDados = 0;				// Quantidade de dados
+
+	/**
+	 * Funcao principal
+	 * @param args
+	 */
 	public static void main(String[] args) {
-		
+
 		arvorePrincipal = new TreeSet<>();
 		cabecalho = new ArrayList<>();
-		
+
 		final String ARQUIVO1 = "Sample - Superstore Sales.csv";
 		final String ARQUIVO2 = "returned.csv";
 		final String ARQUIVO3 = "users.csv";
-		
-		
+
 		Leitor lt = new Leitor();
 		lt.LeEProcessa(ARQUIVO1);
-		
-		/*for (Dado i : arvorePrincipal){
-			System.out.println(i.nrLinha);
-			System.out.println(i.leitura);
-		}*/
-		
+
 		Escritor that = new Escritor();
 		that.escreveIndice();
 		that.escreveDados();
 
 	}
-	
-	public static ArrayList<String> getCabecalho(){
+
+	/**
+	 * @return o cabeçalho
+	 */
+	public static ArrayList<String> getCabecalho() {
 		return cabecalho;
 	}
-	
-	public static TreeSet<Dado> getArvore(){
+
+	/**
+	 * @return a árvore principal contendo todos os dados
+	 */
+	public static TreeSet<Dado> getArvore() {
 		return arvorePrincipal;
 	}
-	
-	public static int[] getValoresMaiores(){
+
+	/**
+	 * @return a lista contendo todos as quantidades de caracteres dos items do arquivo
+	 */
+	public static int[] getValoresMaiores() {
 		return valoresMaiores;
 	}
-	
-	public static int getNumeroDados(){
+
+	/**
+	 * @return o numero de items do arquivo
+	 */
+	public static int getNumeroDados() {
 		return numeroDados;
 	}
-	
-	public static void setValoresMaiores(int[] novosValores){
+
+	/**
+	 * @param novosValores atualiza os valores
+	 */
+	public static void setValoresMaiores(int[] novosValores) {
 		valoresMaiores = novosValores;
 	}
-	
-	public static void setNumeroDados(int n){
+
+	public static void setNumeroDados(int n) {
 		numeroDados = n;
 	}
 

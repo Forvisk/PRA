@@ -7,74 +7,90 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+/**
+ * @author Adriano e Gustavo
+ * Esta classe realiza a leitura e organização dos dados dos arquivos originais
+ *
+ */
 public class Leitor {
-	
-	
-	Leitor(){
-		
+
+	/**
+	 * Não precisamos de nada no construtor
+	 */
+	Leitor() {
+
 	}
 
-	TreeSet<Dado> LeEProcessa(String arqv){
+	/**
+	 * Esta função lê e organiza o arquivo numa árvore
+	 * @param arqv é o nome do arquivo a ser aberto
+	 * @return uma arvore contendo todos os dados do arquivo em uma {@link java.util.TreeSet}
+	 * @see java.util.TreeSet
+	 */
+	TreeSet<Dado> LeEProcessa(String arqv) {
 		BufferedReader leitor = null;
 		try {
-			leitor = new BufferedReader(new FileReader(arqv) );
+			leitor = new BufferedReader(new FileReader(arqv));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		String cLine;
 		int linha_atual = 0;
 		int[] maiores = null;
-		
+
 		try {
 			String linha = leitor.readLine();
 			String[] nomeCabecalhos = SeparaLinha(linha);
 			maiores = new int[nomeCabecalhos.length + 1];
 
-			
 			while ((cLine = leitor.readLine()) != null) {
 				linha_atual++;
 				String[] dados = SeparaLinha(cLine);
 				Producao.AdicionaNaArvore(linha_atual, dados);
 				int i = 0;
-				
+
 				for (String string : dados) {
-					if (string.length() > maiores[i]){
+					if (string.length() > maiores[i]) {
 						maiores[i] = string.length();
 					}
 					i++;
 				}
 			}
 			int num = 0;
-			for (String i : nomeCabecalhos){
+			for (String i : nomeCabecalhos) {
 				Main.getCabecalho().add(i);
-				if (i.length() > maiores[num]){
+				if (i.length() > maiores[num]) {
 					maiores[num] = i.length();
 				}
 				num++;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		maiores[maiores.length - 1] = Utilitarios.getNumberOfDigits(linha_atual);
 
 		Main.setValoresMaiores(maiores);
-		return null;		
+		return null;
 	}
-	
-	String[] SeparaLinha(String s){
+
+	/**
+	 * @param s String a ser separada
+	 * @return Vetor contendo todos os campos da string separados pelo SEPARADOR
+	 */
+	String[] SeparaLinha(String s) {
 		final char ASPAS = '"', SEPARADOR = ';';
+		
 		boolean podeSeparar = true;
 		ArrayList<String> res = new ArrayList<>();
 		String temp = "";
+		
 		for (int i = 0; i < s.length(); ++i) {
 			char c = s.charAt(i);
-			if (c == ASPAS){
+			if (c == ASPAS) {
 				podeSeparar = !podeSeparar;
 			}
-			if (c == SEPARADOR && podeSeparar){
+			if (c == SEPARADOR && podeSeparar) {
 				res.add(temp);
 				temp = "";
 			} else {
