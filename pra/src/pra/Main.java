@@ -72,6 +72,9 @@ public class Main {
 		valoresMaiores = novosValores;
 	}
 
+	/**
+	 * @param n atualiza o numero de dados que o arquivo de entrada possui por instancia
+	 * */
 	public static void setNumeroDados(int n) {
 		numeroDados = n;
 	}

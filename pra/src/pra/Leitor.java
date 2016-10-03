@@ -41,30 +41,15 @@ public class Leitor {
 
 		try {
 			String linha = leitor.readLine();
+			
 			String[] nomeCabecalhos = SeparaLinha(linha);
+			
 			maiores = new int[nomeCabecalhos.length + 1];
 
-			while ((cLine = leitor.readLine()) != null) {
-				linha_atual++;
-				String[] dados = SeparaLinha(cLine);
-				Producao.AdicionaNaArvore(linha_atual, dados);
-				int i = 0;
-
-				for (String string : dados) {
-					if (string.length() > maiores[i]) {
-						maiores[i] = string.length();
-					}
-					i++;
-				}
-			}
-			int num = 0;
-			for (String i : nomeCabecalhos) {
-				Main.getCabecalho().add(i);
-				if (i.length() > maiores[num]) {
-					maiores[num] = i.length();
-				}
-				num++;
-			}
+			linha_atual = leDados(leitor, linha_atual, maiores);
+			
+			verificaTamanhoCabecalhos(maiores, nomeCabecalhos);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -72,6 +57,39 @@ public class Leitor {
 
 		Main.setValoresMaiores(maiores);
 		return null;
+	}
+	/**
+	 * Metodo que  verifica  o numero de caracteres do cabecalho para uso futuro
+	 */
+	private void verificaTamanhoCabecalhos(int[] maiores, String[] nomeCabecalhos) {
+		int num = 0;
+		for (String i : nomeCabecalhos) {
+			Main.getCabecalho().add(i);
+			if (i.length() > maiores[num]) {
+				maiores[num] = i.length();
+			}
+			num++;
+		}
+	}
+	/**
+	 * Metodo para ler os dados do arquivo de entrada
+	 * */
+	private int leDados(BufferedReader leitor, int linha_atual, int[] maiores) throws IOException {
+		String cLine;
+		while ((cLine = leitor.readLine()) != null) {
+			linha_atual++;
+			String[] dados = SeparaLinha(cLine);
+			Producao.AdicionaNaArvore(linha_atual, dados);
+			int i = 0;
+
+			for (String string : dados) {
+				if (string.length() > maiores[i]) {
+					maiores[i] = string.length();
+				}
+				i++;
+			}
+		}
+		return linha_atual;
 	}
 
 	/**
