@@ -60,7 +60,7 @@ public class Leitor {
 		}
 		maiores[maiores.length - 1] = Utilitarios.getNumberOfDigits(linha_atual);
 
-		PRAServidorArquivo.setValoresMaiores(maiores);
+		GerenciadorArquivo.getInstance().setValoresMaiores(maiores);
 		return null;
 	}
 	/**
@@ -69,7 +69,7 @@ public class Leitor {
 	private void verificaTamanhoCabecalhos(int[] maiores, String[] nomeCabecalhos) {
 		int num = 0;
 		for (String i : nomeCabecalhos) {
-			PRAServidorArquivo.getCabecalho().add(i);
+			GerenciadorArquivo.getInstance().getCabecalho().add(i);
 			if (i.length() > maiores[num]) {
 				maiores[num] = i.length();
 			}

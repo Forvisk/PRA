@@ -23,7 +23,7 @@ public class Producao {
 		for (int i = 0; i < valores.length; ++i)
 			coisas.add(valores[i]);
 		Dado novoDado = new Dado(coisas, linha);
-		PRAServidorArquivo.getArvore().add(novoDado);
+		GerenciadorArquivo.getInstance().getArvore().add(novoDado);
 	}
 
 }

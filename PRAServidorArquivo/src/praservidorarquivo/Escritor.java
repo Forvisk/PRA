@@ -20,7 +20,7 @@ import java.io.Writer;
  */
 public class Escritor {
 
-	private static final String INDICE 				= "indice.pra";			// Arquivo de indice que sera salvo
+	private static final String INDICE              = "indice.pra";			// Arquivo de indice que sera salvo
 	private static final String ARQUIVO_INDENTADO	= "indentado.pra";		// Arquivo principal indentado que sera salvo
 
 	/**
@@ -47,9 +47,9 @@ public class Escritor {
 			String linha = "Linha";
 			String ID = "ID";
 
-			int maiorIndiceSize = Math.max(PRAServidorArquivo.getValoresMaiores()[PRAServidorArquivo.getValoresMaiores().length - 1],
+			int maiorIndiceSize = Math.max(GerenciadorArquivo.getInstance().getValoresMaiores()[GerenciadorArquivo.getInstance().getValoresMaiores().length - 1],
 					linha.length() + 1);
-			int maiorIDSize = Math.max(PRAServidorArquivo.getValoresMaiores()[1], ID.length() + 1);
+			int maiorIDSize = Math.max(GerenciadorArquivo.getInstance().getValoresMaiores()[1], ID.length() + 1);
 
 			String index = Utilitarios.repeatString(" ", ((maiorIndiceSize + 1) - linha.length()));
 			String id = Utilitarios.repeatString(" ", ((maiorIDSize + 1) - ID.length()));
@@ -76,7 +76,7 @@ public class Escritor {
 		writer.write(id);
 
 		writer.write("\n");
-		for (Dado d : PRAServidorArquivo.getArvore()) {
+		for (Dado d : GerenciadorArquivo.getInstance().getArvore()) {
 			index = Utilitarios.repeatString(" ",
 					((maiorIndiceSize + 1) - Utilitarios.getNumberOfDigits(d.getNrLinha())));
 			id = Utilitarios.repeatString(" ", ((maiorIDSize + 1) - d.getLeitura().get(1).length()));
@@ -120,11 +120,11 @@ public class Escritor {
 	 */
 	private void escritorDados(Writer writer) throws IOException {
 		int num;
-		for (Dado d : PRAServidorArquivo.getArvore()) {
+		for (Dado d : GerenciadorArquivo.getInstance().getArvore()) {
 			num = 0;
 
 			for (String i : d.getLeitura()) {
-				int maxCabe = PRAServidorArquivo.getValoresMaiores()[num];
+				int maxCabe = GerenciadorArquivo.getInstance().getValoresMaiores()[num];
 
 				String index = Utilitarios.repeatString(" ", ((maxCabe + 1) - i.length()));
 				writer.write(i);
@@ -142,8 +142,8 @@ public class Escritor {
 	private void escritorCabecalho(Writer writer) throws IOException {
 		int num = 0;
 
-		for (String i : PRAServidorArquivo.getCabecalho()) {
-			int maxCabe = PRAServidorArquivo.getValoresMaiores()[num];
+		for (String i : GerenciadorArquivo.getInstance().getCabecalho()) {
+			int maxCabe = GerenciadorArquivo.getInstance().getValoresMaiores()[num];
 
 			String index = Utilitarios.repeatString(" ", ((maxCabe + 1) - i.length()));
 			writer.write(i);

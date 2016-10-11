@@ -6,85 +6,43 @@
 package praservidorarquivo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 /**
  *
  * @author usuario
  */
-public class PRAServidorArquivo {
+class PRAServidorArquivo {
 
-    private static TreeSet<Dado> arvorePrincipal;	// Árvore que conterá os dados
-    private static ArrayList<String> cabecalho;		// Cabecalho do arquivo a ser processado
-    private static int[] valoresMaiores;			// Vetor contendo os maiores tamanhos de cada item do arquivo
-    private static int numeroDados = 0;				// Quantidade de dados
-
-    /**
-     * Funcao principal
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-
-        arvorePrincipal = new TreeSet<>();
-        cabecalho = new ArrayList<>();
-
-        final String ARQUIVO1 = "Sample - Superstore Sales.csv";
-        final String ARQUIVO2 = "returned.csv";
-        final String ARQUIVO3 = "users.csv";
-
-        Leitor lt = new Leitor();
-        lt.LeEProcessa(ARQUIVO1);
-
-        Escritor that = new Escritor();
-        that.escreveIndice();
-        that.escreveDados();
-
+    public static final int PORTA = 62469;
+    
+    public static Map<String, IMetodo> mapMetodos;
+    
+    public static void main(String[] args){
+        
+        JanelaServidor.getInstance();
+        
+        PopulateMetodos();
+        
+        GerenciadorArquivo ga = GerenciadorArquivo.getInstance();
+        ga.IniciaGerenciador();
+        GerenciadorServidor gs = GerenciadorServidor.getInstance(PORTA);
     }
 
-    /**
-     * @return o cabeçalho
-     */
-    public static ArrayList<String> getCabecalho() {
-        return cabecalho;
+    private static void PopulateMetodos() {
+        mapMetodos = new HashMap<>();
+        
+        // Atribuimos uma string a um retorno. No caso, uma função IMetodo.
+        
+        // Find encontra um indice
+        // O indice esta em args[1]
+        mapMetodos.put("find", new IMetodo(){
+            @Override
+            public String method(String[] args) {
+                return GerenciadorArquivo.getInstance().FindIndex(args[1]);
+            }
+        });
     }
-
-    /**
-     * @return a árvore principal contendo todos os dados
-     */
-    public static TreeSet<Dado> getArvore() {
-        return arvorePrincipal;
-    }
-
-    /**
-     * @return a lista contendo todos as quantidades de caracteres dos items do
-     * arquivo
-     */
-    public static int[] getValoresMaiores() {
-        return valoresMaiores;
-    }
-
-    /**
-     * @return o numero de items do arquivo
-     */
-    public static int getNumeroDados() {
-        return numeroDados;
-    }
-
-    /**
-     * @param novosValores atualiza os valores
-     */
-    public static void setValoresMaiores(int[] novosValores) {
-        valoresMaiores = novosValores;
-    }
-
-    /**
-     * @param n atualiza o numero de dados que o arquivo de entrada possui por
-     * instancia
-	 *
-     */
-    public static void setNumeroDados(int n) {
-        numeroDados = n;
-    }
-
 }
