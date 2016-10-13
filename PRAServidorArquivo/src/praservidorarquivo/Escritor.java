@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package praservidorarquivo;
 
 import java.io.BufferedWriter;
@@ -14,144 +9,189 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 /**
- * @author Adriano e Gustavo
+ * <h1>Escritor</h1>
  * Esta classe executa o processo de escritura dos arquivos do trabalho
+ * <p>
+ * E sem machismo. Escritoras também são boas.
+ *
+ * @author Adriano
+ * @author Gustavo
  *
  */
 public class Escritor {
 
-	private static final String INDICE              = "indice.pra";			// Arquivo de indice que sera salvo
-	private static final String ARQUIVO_INDENTADO	= "indentado.pra";		// Arquivo principal indentado que sera salvo
+    private static final String INDICE = "indice.pra";			// Arquivo de indice que sera salvo
+    private static final String ARQUIVO_INDENTADO = "indentado.pra";		// Arquivo principal indentado que sera salvo
 
-	/**
-	 * Não precisamos enviar nada no construtor
-	 */
-	Escritor() {
+    /**
+     * Não precisamos enviar nada no construtor
+     */
+    Escritor () {
 
-	}
+    }
 
-	/**
-	 * Esta é a melhor função que fiz na minha vida @Gustavo
-	 */
-	public void JKRolling() {
+    /**
+     * Esta é a melhor função que fiz na minha vida @Gustavo
+     */
+    public void JKRolling () {
 
-	}
+    }
 
-	/**
-	 * Cria o arquivo de indice
-	 */
-	public void escreveIndice() {
+    /**
+     * Cria o arquivo de indice
+     */
+    public void escreveIndice () {
 
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(INDICE)))) {
+        /*
+         * Apesar deste longo trecho, o que ele faz é checar o indice ( que
+         * sempre estará
+         * na ultima posicao dos vetores ) e adiciona no arquivo ( primeira
+         * linha )
+         */
+        try ( Writer writer = new BufferedWriter ( new OutputStreamWriter ( new FileOutputStream ( INDICE ) ) ) ) {
 
-			String linha = "Linha";
-			String ID = "ID";
+            String linha = "Linha";
+            String ID = "ID";
 
-			int maiorIndiceSize = Math.max(GerenciadorArquivo.getInstance().getValoresMaiores()[GerenciadorArquivo.getInstance().getValoresMaiores().length - 1],
-					linha.length() + 1);
-			int maiorIDSize = Math.max(GerenciadorArquivo.getInstance().getValoresMaiores()[1], ID.length() + 1);
+            int[] maiores = GerenciadorArquivo.getInstance ()
+                    .getValoresMaiores ();
 
-			String index = Utilitarios.repeatString(" ", ((maiorIndiceSize + 1) - linha.length()));
-			String id = Utilitarios.repeatString(" ", ((maiorIDSize + 1) - ID.length()));
-			escritorIndice(writer, linha, ID, maiorIndiceSize, maiorIDSize, index, id);
-			writer.close();
+            int maiorIndiceSize = Math.max ( maiores[ GerenciadorArquivo.getInstance ().getValoresMaiores ().length - 1 ],
+                    linha.length () + 1 );
 
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Realiza a escrita dos indices
-	 * */
-	private void escritorIndice(Writer writer, String linha, String ID, int maiorIndiceSize, int maiorIDSize,
-				String index, String id) throws IOException {
-		writer.write(linha);
-		writer.write(index);
-		writer.write(ID);
-		writer.write(id);
+            int maiorIDSize = Math.max ( maiores[ 1 ], ID.length () + 1 );
 
-		writer.write("\n");
-		for (Dado d : GerenciadorArquivo.getInstance().getArvore()) {
-			index = Utilitarios.repeatString(" ",
-					((maiorIndiceSize + 1) - Utilitarios.getNumberOfDigits(d.getNrLinha())));
-			id = Utilitarios.repeatString(" ", ((maiorIDSize + 1) - d.getLeitura().get(1).length()));
-			writer.write(String.valueOf(d.getNrLinha()));
-			writer.write(index);
+            String index = Utilitarios.repeatString ( " ", ( ( maiorIndiceSize + 1 ) - linha.length () ) );
+            String id = Utilitarios.repeatString ( " ", ( ( maiorIDSize + 1 ) - ID.length () ) );
 
-			writer.write(d.getLeitura().get(1));
-			writer.write(id);
+            escritorIndice ( writer, linha, ID, maiorIndiceSize, maiorIDSize, index, id );
+            writer.close ();
 
-			writer.write("\n");
+        }
+        catch ( UnsupportedEncodingException e ) {
+            e.printStackTrace ();
+        }
+        catch ( FileNotFoundException e ) {
+            e.printStackTrace ();
+        }
+        catch ( IOException e ) {
+            e.printStackTrace ();
+        }
+    }
 
-		}
-	}
+    /**
+     * Realiza a escrita de uma string no arquivo de indice.
+     *
+     * @param writer          é o objeto usado para escrever no arquivo
+     * @param conteudo_linha  é o nome do campo da linha que ficará no cabecalho
+     * @param ID              é uma {@link String} com o nome do campo ID, onde
+     *                        ficará o cabecalho
+     * @param maiorIndiceSize é o maior numero de caracteres que o Indice pode
+     *                        ter
+     * @param maiorIDSize     é o maior numero de caracteres que um ID pode ter
+     * @param index           é o indice a ser escrito
+     * @param id              é o id a ser escrito
+     *
+     * @throws IOException pode ser que dê falha ao executar o método
+     *                     {@link Writer#write(java.lang.String)}
+     */
+    private void escritorIndice ( Writer writer, String conteudo_linha,
+            String ID,
+            int maiorIndiceSize, int maiorIDSize,
+            String index, String id ) throws IOException {
 
-	/**
-	 * Realiza a escritura do arquivo indentado
-	 */
-	public void escreveDados() {
+        writer.write ( conteudo_linha );
+        writer.write ( index );
+        writer.write ( ID );
+        writer.write ( id );
+        writer.write ( "\n" );
 
-		try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ARQUIVO_INDENTADO)))) {
+        for ( Dado dado : GerenciadorArquivo.getInstance ().getArvore () ) {
+            index = Utilitarios.repeatString ( " ",
+                    ( ( maiorIndiceSize + 1 ) - Utilitarios.getNumberOfDigits ( dado.getNumero_linha () ) ) );
 
-			escritorCabecalho(writer);
+            id = Utilitarios.repeatString ( " ", ( ( maiorIDSize + 1 ) - dado.getDados_da_linha ().get ( 1 ).length () ) );
 
-			writer.write("\n");
-			
-			escritorDados(writer);
-			
-			writer.close();
+            writer.write ( String.valueOf ( dado.getNumero_linha () ) );
+            writer.write ( index );
 
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+            writer.write ( dado.getDados_da_linha ().get ( 1 ) );
+            writer.write ( id );
 
-	/**
-	 * Metodo que escreve os dados no arquivo
-	 */
-	private void escritorDados(Writer writer) throws IOException {
-		int num;
-		for (Dado d : GerenciadorArquivo.getInstance().getArvore()) {
-			num = 0;
+            writer.write ( "\n" );
 
-			for (String i : d.getLeitura()) {
-				int maxCabe = GerenciadorArquivo.getInstance().getValoresMaiores()[num];
+        }
+    }
 
-				String index = Utilitarios.repeatString(" ", ((maxCabe + 1) - i.length()));
-				writer.write(i);
-				writer.write(index);
-				num++;
-			}
+    /**
+     * Inicia a operação de escrever os dados nos arquivos. Começa com o indice
+     * no comeco do arquivo e depois parte para o conteduo em si.
+     */
+    public void escreveDados () {
 
-			writer.write("\n");
+        try ( Writer writer = new BufferedWriter ( new OutputStreamWriter ( new FileOutputStream ( ARQUIVO_INDENTADO ) ) ) ) {
 
-		}
-	}
-	/**
-	 * Metodo que escreve os cabecalhos do arquivo
-	 * */
-	private void escritorCabecalho(Writer writer) throws IOException {
-		int num = 0;
+            escritorCabecalho ( writer );
+            writer.write ( "\n" );
+            escritorDados ( writer );
+            writer.close ();
+        }
+        catch ( UnsupportedEncodingException e ) {
+            e.printStackTrace ();
+        }
+        catch ( FileNotFoundException e ) {
+            e.printStackTrace ();
+        }
+        catch ( IOException e ) {
+            e.printStackTrace ();
+        }
+    }
 
-		for (String i : GerenciadorArquivo.getInstance().getCabecalho()) {
-			int maxCabe = GerenciadorArquivo.getInstance().getValoresMaiores()[num];
+    /**
+     * Metodo que escreve todos os dados no arquivo indentado
+     *
+     * @param writer {@link Writer} para o arquivo desejado
+     *
+     * @throws IOException
+     */
+    private void escritorDados ( Writer writer ) throws IOException {
+        int num;
+        for ( Dado d : GerenciadorArquivo.getInstance ().getArvore () ) {
+            num = 0;
 
-			String index = Utilitarios.repeatString(" ", ((maxCabe + 1) - i.length()));
-			writer.write(i);
-			writer.write(index);
+            for ( String i : d.getDados_da_linha () ) {
+                int maxCabe = GerenciadorArquivo.getInstance ().getValoresMaiores ()[ num ];
 
-			num++;
-		}
-	}
+                String index = Utilitarios.repeatString ( " ", ( ( maxCabe + 1 ) - i.length () ) );
+                writer.write ( i );
+                writer.write ( index );
+                num++;
+            }
+
+            writer.write ( "\n" );
+
+        }
+    }
+
+    /**
+     * Metodo que escreve o cabecalho no arquivo
+     *
+     * @param writer {@link Writer} para o arquivo desejado
+     *
+     * @throws IOException
+     */
+    private void escritorCabecalho ( Writer writer ) throws IOException {
+        int num = 0;
+
+        for ( String i : GerenciadorArquivo.getInstance ().getCabecalho () ) {
+            int maxCabe = GerenciadorArquivo.getInstance ().getValoresMaiores ()[ num ];
+
+            String index = Utilitarios.repeatString ( " ", ( ( maxCabe + 1 ) - i.length () ) );
+            writer.write ( i );
+            writer.write ( index );
+
+            num++;
+        }
+    }
 
 }
-
