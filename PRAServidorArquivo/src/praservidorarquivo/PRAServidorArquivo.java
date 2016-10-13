@@ -56,13 +56,45 @@ class PRAServidorArquivo {
         mapMetodos = new HashMap<> ();   // Alocamos o mapa.
 
         // Atribuimos uma string a um retorno. No caso, uma função IMetodo.
-        // Find encontra um indice
+        // 'F' encontra um indice
         // O indice esta em args[1]
-        mapMetodos.put ( "find", ( IMetodo ) ( String[] args )
-                -> GerenciadorArquivo.getInstance ().FindIndex (
-                        Integer.parseInt ( args[ 1 ] )
-                )
-        );
+        mapMetodos.put ( "F", ( IMetodo ) ( String[] args ) -> {
+            return GerenciadorArquivo.getInstance ().getDadoAtIndexAsString (
+                    Integer.parseInt ( args[ 1 ] )
+            );
+        } );
+
+        // 'E' deleta um indice ( não permanentemente )
+        // O indice esta em args[1]
+        mapMetodos.put ( "E", ( IMetodo ) ( String[] args ) -> {
+            return GerenciadorArquivo.getInstance ().delDado (
+                    Integer.parseInt ( args[ 1 ] )
+            );
+        } );
+
+        // 'E' deleta um indice ( não permanentemente )
+        // O indice esta em args[1]
+        mapMetodos.put ( "I", ( IMetodo ) ( String[] args ) -> {
+            return GerenciadorArquivo.getInstance ().insertDado (
+                    args
+            // TODO: faz isso certo pls
+            );
+        } );
+
+        // 'E' deleta um indice ( não permanentemente )
+        // O indice esta em args[1]
+        mapMetodos.put ( "M", ( IMetodo ) ( String[] args ) -> {
+            String[] valores = new String[ args.length - 1 ];
+            for ( int i = 1; i < args.length; i++ ) {
+                valores[ i - 1 ] = args[ i ];
+            }
+            return GerenciadorArquivo.getInstance ().modificaDado (
+                    Integer.parseInt ( args[ 1 ] ),
+                    valores
+            // TODO: faz isso certo pls
+            );
+        } );
+        
     }
 
 }

@@ -5,7 +5,9 @@
  */
 package cliente_pra;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -40,14 +42,30 @@ class Cliente {
     private void inicio(){
         String serverAddress;
         serverAddress = JOptionPane.showInputDialog( "IP servidor:");
-        
+
         try {
-            socket = new Socket ( serverAddress, 62469);
+            socket = new Socket(serverAddress, 62469);
+
             try {
-                while (true){
-                    enviar();
-                }
-            } finally{
+                new Thread() {
+                    @Override
+                    public void run() {
+                        while (true) {
+                            enviar();
+                        }
+                    }
+                }.start();
+
+                new Thread() {
+                    @Override
+                    public void run() {
+                        while (true) {
+                            receber();
+                        }
+                    }
+                }.start();
+                
+            } finally {
                 socket.close();
             }
         } catch (IOException ex) {
@@ -71,6 +89,21 @@ class Cliente {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    private void receber() {
+        try {
+            BufferedReader input = new BufferedReader( new InputStreamReader( socket.getInputStream()));
+            String answer = input.readLine();
+            System.out.println(answer);
+            if( producao.messageToRead(answer)){
+                System.out.println("OK");
+            }else{
+                System.out.println("NO OK");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     public static Socket getSocket(){
         return socket;
@@ -79,5 +112,7 @@ class Cliente {
     public String getUsername(){
         return username;
     }
+    
+
     
 }

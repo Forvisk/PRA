@@ -108,14 +108,14 @@ public class Escritor {
 
         for ( Dado dado : GerenciadorArquivo.getInstance ().getArvore () ) {
             index = Utilitarios.repeatString ( " ",
-                    ( ( maiorIndiceSize + 1 ) - Utilitarios.getNumberOfDigits ( dado.getNumero_linha () ) ) );
+                    ( ( maiorIndiceSize + 1 ) - Utilitarios.getNumberOfDigits ( dado.getNumeroLinha () ) ) );
 
-            id = Utilitarios.repeatString ( " ", ( ( maiorIDSize + 1 ) - dado.getDados_da_linha ().get ( 1 ).length () ) );
+            id = Utilitarios.repeatString ( " ", ( ( maiorIDSize + 1 ) - dado.getDadosDaLinha ().get ( 1 ).length () ) );
 
-            writer.write ( String.valueOf ( dado.getNumero_linha () ) );
+            writer.write ( String.valueOf ( dado.getNumeroLinha () ) );
             writer.write ( index );
 
-            writer.write ( dado.getDados_da_linha ().get ( 1 ) );
+            writer.write ( dado.getDadosDaLinha ().get ( 1 ) );
             writer.write ( id );
 
             writer.write ( "\n" );
@@ -159,7 +159,7 @@ public class Escritor {
         for ( Dado d : GerenciadorArquivo.getInstance ().getArvore () ) {
             num = 0;
 
-            for ( String i : d.getDados_da_linha () ) {
+            for ( String i : d.getDadosDaLinha () ) {
                 int maxCabe = GerenciadorArquivo.getInstance ().getValoresMaiores ()[ num ];
 
                 String index = Utilitarios.repeatString ( " ", ( ( maxCabe + 1 ) - i.length () ) );
