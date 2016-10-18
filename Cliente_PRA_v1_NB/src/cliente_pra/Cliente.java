@@ -24,9 +24,12 @@ class Cliente {
     private static Socket socket;
     private String username;
     private String password;
+    private String serverAddress;
     
     private static Cliente instancia = null;
     private static Producao producao;
+    
+    private static ClienteFramer frame;
     
     Cliente(){
         producao = new Producao();
@@ -40,22 +43,13 @@ class Cliente {
     }
     
     private void inicio(){
-        String serverAddress;
         serverAddress = JOptionPane.showInputDialog( "IP servidor:");
 
         try {
             socket = new Socket(serverAddress, 62469);
-
+            frame = new ClienteFramer();
             try {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            enviar();
-                        }
-                    }
-                }.start();
-
+                
                 new Thread() {
                     @Override
                     public void run() {
@@ -73,12 +67,10 @@ class Cliente {
         }
     }
 
-    private void enviar() {
+    public static void enviar( String message) {
         PrintWriter output;
         try {
             output = new PrintWriter( socket.getOutputStream(), true);
-            String message;
-            message = JOptionPane.showInputDialog("Insira a mensagem:");
             message = producao.correctMessage( message);
             
             if( !message.equals( "ERRO")){
@@ -107,6 +99,10 @@ class Cliente {
     
     public static Socket getSocket(){
         return socket;
+    }
+    
+    public String getIpServer(){
+        return serverAddress;
     }
     
     public String getUsername(){

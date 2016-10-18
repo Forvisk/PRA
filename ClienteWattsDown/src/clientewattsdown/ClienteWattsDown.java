@@ -16,7 +16,8 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author UDESC
+ * @author Adriano Zanella Junior
+ * @author Gustavo Diel
  */
 public class ClienteWattsDown {
 
