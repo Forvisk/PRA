@@ -66,6 +66,11 @@ class Cliente {
         try {
             output = new PrintWriter ( socket.getOutputStream (), true );
             message = Producao.getInstance ().correctMessage ( message );
+            
+            if (message == null){
+                JOptionPane.showMessageDialog ( null, "Sintaxe errada. Comandos aceitos:\nfind;indice\ndelete;indice\ninsert;indice;coisas\nedit;indice;coisas");
+                return;
+            }
 
             if ( !message.equals ( "ERRO" ) ) {
                 output.println ( message );
@@ -101,6 +106,15 @@ class Cliente {
 
     public String getUsername () {
         return username;
+    }
+    
+    public void Disconnect(){
+        try {
+            socket.close ();
+        }
+        catch ( IOException ex ) {
+            Logger.getLogger ( Cliente.class.getName() ).log ( Level.SEVERE, null, ex );
+        }
     }
 
 }

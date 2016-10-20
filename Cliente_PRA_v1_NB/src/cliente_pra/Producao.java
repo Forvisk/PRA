@@ -5,7 +5,6 @@
  */
 package cliente_pra;
 
-import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -24,8 +23,10 @@ public class Producao {
     private static final String EXCLUDE = "delete";
     private static final String INCLUDE = "include";
     private static final String MODIFY = "modify";
-    /*private static final String LEFTPAR = "(";
-    private static final String RIGHTPAR = ")";*/
+    /*
+     * private static final String LEFTPAR = "(";
+     * private static final String RIGHTPAR = ")";
+     */
     private static final String SEPARATOR = ";";
 
     private static final String ERRO = "Erro";
@@ -39,6 +40,12 @@ public class Producao {
     private static final char COD_INCLUDE = 'I';
     private static final char COD_MODIFY = 'M';
     private static final char COD_ERRO = '0';
+
+    // Minhas TAG :v
+    private static final String TAG_MODIFICAR = "modify";
+    private static final String TAG_DELETAR = "delete";
+    private static final String TAG_INSERIR = "insert";
+    private static final String TAG_PROCURAR = "find";
 
     private static Producao instance = null;
 
@@ -69,6 +76,7 @@ public class Producao {
     /**
      *
      * @param ordem
+     *
      * @return
      */
     @SuppressWarnings ( "ConvertToStringSwitch" )
@@ -95,6 +103,7 @@ public class Producao {
     /**
      *
      * @param msg
+     *
      * @return
      */
     public boolean messageToRead ( String msg ) {
@@ -102,51 +111,75 @@ public class Producao {
         try {
             JSONParser parser = new JSONParser ();
             JSONObject json = ( JSONObject ) parser.parse ( msg );
-            
+            System.out.println ( "Vesh" );
             if ( json.containsKey ( "erro" ) ) {
                 // TODO: Error msg
-                JOptionPane.showMessageDialog ( null, json.get ( "status" ));
+                // Done
+                JOptionPane.showMessageDialog ( null, json.get ( "status" ) );
             } else {
                 // TODO: ver se e pra ler, editar ou o que a mensagem.
-                Resposta rep = new Resposta (json );
+                String acao = ( String ) json.get ( "acao" );
+                System.out.println ( "IMRPIMEEEEEEE: " + acao );
+                switch ( acao ) {
+                    case TAG_DELETAR:
+                        JOptionPane.showMessageDialog ( null, json.get ( "status" ) );
+                        break;
+                    case TAG_INSERIR:
+                        JOptionPane.showMessageDialog ( null, json.get ( "status" ) );
+                        break;
+                    case TAG_MODIFICAR:
+                        JOptionPane.showMessageDialog ( null, json.get ( "status" ) );
+                        break;
+                    case TAG_PROCURAR:
+                        Resposta rep = new Resposta ( json, true);
+                        break;
+
+                }
             }
 
-        } catch ( ParseException ex ) {
+        }
+        catch ( ParseException ex ) {
             Logger.getLogger ( Producao.class.getName () ).log ( Level.SEVERE, null, ex );
         }
         return true;
     }
 
-/*    private String parseJSON ( String msg, int level ) {
-        StringBuilder sb = new StringBuilder ();
-        sb.append ( String.join ( "", Collections.nCopies ( level, "\t" ) ) ).append ( "{\n" );
-        level++;
-        try {
-            JSONParser parser = new JSONParser ();
-            JSONObject json = ( JSONObject ) parser.parse ( msg );
-            for ( Object key : json.keySet () ) {
-                //based on you key types
-                String keyStr = ( String ) key;
-                Object keyvalue = json.get ( keyStr );
-
-                //Print key and value
-                sb.append ( String.join ( "", Collections.nCopies ( level, "\t" ) ) );
-                //for nested objects iteration if required
-                if ( keyvalue instanceof JSONObject ) {
-                    sb.append ( "\"" ).append ( keyStr ).append ( "\":\n" );
-                    sb.append ( parseJSON ( ( ( JSONObject ) keyvalue ).toJSONString (), level + 1 ) );
-                } else {
-                    sb.append ( "\"" ).append ( keyStr ).append ( "\": \"" ).append ( keyvalue ).append ( "\"\n" );
-                }
-
-            }
-        } catch ( ParseException ex ) {
-            Logger.getLogger ( Producao.class.getName () ).log ( Level.SEVERE, null, ex );
-        }
-        sb.append ( String.join ( "", Collections.nCopies ( level - 1, "\t" ) ) ).append ( "}\n" );
-        return new String ( sb );
-    }*/
-
+    /*
+     * private String parseJSON ( String msg, int level ) {
+     * StringBuilder sb = new StringBuilder ();
+     * sb.append ( String.join ( "", Collections.nCopies ( level, "\t" ) )
+     * ).append ( "{\n" );
+     * level++;
+     * try {
+     * JSONParser parser = new JSONParser ();
+     * JSONObject json = ( JSONObject ) parser.parse ( msg );
+     * for ( Object key : json.keySet () ) {
+     * //based on you key types
+     * String keyStr = ( String ) key;
+     * Object keyvalue = json.get ( keyStr );
+     *
+     * //Print key and value
+     * sb.append ( String.join ( "", Collections.nCopies ( level, "\t" ) ) );
+     * //for nested objects iteration if required
+     * if ( keyvalue instanceof JSONObject ) {
+     * sb.append ( "\"" ).append ( keyStr ).append ( "\":\n" );
+     * sb.append ( parseJSON ( ( ( JSONObject ) keyvalue ).toJSONString (),
+     * level + 1 ) );
+     * } else {
+     * sb.append ( "\"" ).append ( keyStr ).append ( "\": \"" ).append (
+     * keyvalue ).append ( "\"\n" );
+     * }
+     *
+     * }
+     * } catch ( ParseException ex ) {
+     * Logger.getLogger ( Producao.class.getName () ).log ( Level.SEVERE, null,
+     * ex );
+     * }
+     * sb.append ( String.join ( "", Collections.nCopies ( level - 1, "\t" ) )
+     * ).append ( "}\n" );
+     * return new String ( sb );
+     * }
+     */
     @SuppressWarnings ( "ConvertToStringSwitch" )
     private boolean commandChoice ( String dados[] ) {
         int action;

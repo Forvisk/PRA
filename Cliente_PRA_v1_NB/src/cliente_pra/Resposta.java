@@ -5,20 +5,18 @@
  */
 package cliente_pra;
 
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import java.awt.FlowLayout;
-import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import org.json.simple.JSONObject;
 
 /**
@@ -27,11 +25,14 @@ import org.json.simple.JSONObject;
  */
 public class Resposta extends JFrame implements ActionListener {
 
-    JSONObject objeto;
+    private JSONObject objeto;
+    
+    private boolean lockedWindows;
 
-    public Resposta ( JSONObject json ) {
+    public Resposta ( JSONObject json, boolean lockWIndows ) {
         super ( "Add component on JFrame at runtime" );
         objeto = json;
+        lockedWindows = lockWIndows;
         configuraJanela ();
     }
 
@@ -62,7 +63,8 @@ public class Resposta extends JFrame implements ActionListener {
         containerLeft.setLayout ( layoutLeft );
 
         for ( int j = 0, n = left.size (); j < n; j++ ) {
-            JLabel button = new JLabel ( left.get ( j ) );
+            JTextField button = new JTextField ( left.get ( j ) );
+            button.setEnabled ( false );
             button.setAlignmentX ( Component.LEFT_ALIGNMENT );
             containerLeft.add ( button );
         }
@@ -73,7 +75,8 @@ public class Resposta extends JFrame implements ActionListener {
         containerRight.setLayout ( layoutRight );
 
         for ( int j = 0, n = right.size (); j < n; j++ ) {
-            JLabel button = new JLabel ( right.get ( j ) );
+            JTextField button = new JTextField ( right.get ( j ) );
+            button.setEditable ( !lockedWindows );
             button.setAlignmentX ( Component.LEFT_ALIGNMENT );
             containerRight.add ( button );
         }
@@ -97,7 +100,7 @@ public class Resposta extends JFrame implements ActionListener {
         //add ( button, BorderLayout.SOUTH );
 
         button.addActionListener ( this );
-        setDefaultCloseOperation ( JFrame.EXIT_ON_CLOSE );
+        setDefaultCloseOperation ( JFrame.DISPOSE_ON_CLOSE );
         setLocationRelativeTo ( null );
         setVisible ( true );
     }
