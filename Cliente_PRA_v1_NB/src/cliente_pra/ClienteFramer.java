@@ -18,6 +18,7 @@ public class ClienteFramer extends javax.swing.JFrame {
     public ClienteFramer() {
         initComponents();
         jLIpServer.setText(Cliente.getInstance().getIpServer());
+        setLocationRelativeTo ( null );
     }
     
     
