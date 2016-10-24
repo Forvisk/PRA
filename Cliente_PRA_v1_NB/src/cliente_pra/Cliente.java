@@ -20,99 +20,87 @@ import javax.swing.JOptionPane;
  * @author Gustavo Diel
  */
 class Cliente {
-    
+
     private static Socket socket;
     private String username;
     private String password;
-    
+    private String serverAddress;
+
     private static Cliente instancia = null;
-    private static Producao producao;
-    
-    Cliente(){
-        producao = new Producao();
-        inicio();
+
+    private static ClienteFramer frame;
+
+    private Cliente () {
     }
-    
-    public static Cliente getInstance(){
-        if( instancia == null)
-            instancia = new Cliente();
+
+    public static Cliente getInstance () {
+        if ( instancia == null ) {
+            instancia = new Cliente ();
+        }
         return instancia;
     }
-    
-    private void inicio(){
-        String serverAddress;
-        serverAddress = JOptionPane.showInputDialog( "IP servidor:");
 
+    public void inicio () {
+        System.out.println ( "Vai" );
+        serverAddress = JOptionPane.showInputDialog ( "IP servidor:" );
+        System.out.println ( serverAddress );
         try {
-            socket = new Socket(serverAddress, 62469);
-
-            try {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            enviar();
-                        }
+            socket = new Socket ( serverAddress, 2300 );
+            frame = new ClienteFramer ();
+            frame.setVisible ( true );
+            new Thread () {
+                @Override
+                public void run () {
+                    while (true) {
+                        receber ();
                     }
-                }.start();
-
-                new Thread() {
-                    @Override
-                    public void run() {
-                        while (true) {
-                            receber();
-                        }
-                    }
-                }.start();
-                
-            } finally {
-                socket.close();
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }.start ();
+        } catch ( IOException ex ) {
+            Logger.getLogger ( Cliente.class.getName () ).log ( Level.SEVERE, null, ex );
         }
     }
 
-    private void enviar() {
+    public static void enviar ( String message ) {
         PrintWriter output;
         try {
-            output = new PrintWriter( socket.getOutputStream(), true);
-            String message;
-            message = JOptionPane.showInputDialog("Insira a mensagem:");
-            message = producao.correctMessage( message);
-            
-            if( !message.equals( "ERRO")){
-                output.println( message);
+            output = new PrintWriter ( socket.getOutputStream (), true );
+            message = Producao.getInstance ().correctMessage ( message );
+
+            if ( !message.equals ( "ERRO" ) ) {
+                output.println ( message );
             }
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch ( IOException ex ) {
+            Logger.getLogger ( Cliente.class.getName () ).log ( Level.SEVERE, null, ex );
         }
     }
 
-    private void receber() {
+    private void receber () {
         try {
-            BufferedReader input = new BufferedReader( new InputStreamReader( socket.getInputStream()));
-            String answer = input.readLine();
-            System.out.println(answer);
-            if( producao.messageToRead(answer)){
-                System.out.println("OK");
-            }else{
-                System.out.println("NO OK");
+            BufferedReader input = new BufferedReader ( new InputStreamReader ( socket.getInputStream () ) );
+            String answer = input.readLine ();
+            System.out.println ( answer );
+            if ( Producao.getInstance ().messageToRead ( answer ) ) {
+                System.out.println ( "OK" );
+            } else {
+                System.out.println ( "NO OK" );
             }
-        } catch (IOException ex) {
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        } catch ( IOException ex ) {
+            Logger.getLogger ( Cliente.class.getName () ).log ( Level.SEVERE, null, ex );
         }
     }
-    
-    public static Socket getSocket(){
+
+    public static Socket getSocket () {
         return socket;
     }
-    
-    public String getUsername(){
+
+    public String getIpServer () {
+        return serverAddress;
+    }
+
+    public String getUsername () {
         return username;
     }
-    
 
-    
 }

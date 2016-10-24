@@ -7,7 +7,8 @@ package clientewattsdown;
 
 /**
  *
- * @author UDESC
+ * @author Adriano Zanella Junior
+ * @author Gustavo Diel
  */
 public class ClienteScreem extends javax.swing.JFrame {
     

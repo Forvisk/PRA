@@ -1,6 +1,5 @@
 package cliente_pra;
 
-
 import cliente_pra.Cliente;
 
 /*
@@ -8,7 +7,6 @@ import cliente_pra.Cliente;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author UDESC
@@ -18,8 +16,9 @@ public class Principal {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        Cliente cliente = new Cliente();
+    public static void main ( String[] args ) {
+        Cliente cliente = Cliente.getInstance ();
+        cliente.inicio ();
     }
-    
+
 }

@@ -7,7 +7,8 @@ package cliente_pra;
 
 /**
  *
- * @author UDESC
+ * @author Adriano Zanella Junior
+ * @author Gustavo Diel
  */
 public class ClienteFramer extends javax.swing.JFrame {
 
@@ -16,8 +17,11 @@ public class ClienteFramer extends javax.swing.JFrame {
      */
     public ClienteFramer() {
         initComponents();
+        jLIpServer.setText(Cliente.getInstance().getIpServer());
+        setLocationRelativeTo ( null );
     }
-
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -27,21 +31,59 @@ public class ClienteFramer extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTFOrder = new javax.swing.JTextField();
+        JBOrder = new javax.swing.JButton();
+        jLIpServer = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        JBOrder.setText("Enviar Ordem");
+        JBOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBOrderActionPerformed(evt);
+            }
+        });
+
+        jLIpServer.setText("IpServer");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTFOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 559, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(JBOrder)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLIpServer))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTFOrder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JBOrder))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                .addComponent(jLIpServer))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void JBOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBOrderActionPerformed
+        // TODO add your handling code here:
+        new Thread() {
+            @Override
+            public void run(){
+                Cliente.enviar(jTFOrder.getText());
+                jTFOrder.setText("");
+            }
+        }.start();
+    }//GEN-LAST:event_JBOrderActionPerformed
 
     /**
      * @param args the command line arguments
@@ -79,5 +121,8 @@ public class ClienteFramer extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton JBOrder;
+    private javax.swing.JLabel jLIpServer;
+    private javax.swing.JTextField jTFOrder;
     // End of variables declaration//GEN-END:variables
 }
