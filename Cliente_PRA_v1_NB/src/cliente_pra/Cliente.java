@@ -15,20 +15,25 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * <h1>Cliente</h1>
+ * Esta classe executa a conexão entre cliente e servidor
+ * <p>
+ * 
  * @author Adriano Zanella Junior
  * @author Gustavo Diel
  */
 class Cliente {
 
+    private static final String SEPARADOR = ";";
+    
+    /**
+     * Construtor
+     */
     private Cliente () {
-
     }
 
     /**
-     * Retorna a instancia do cliente
-     *
-     * @return única instancia do Cliente
+     * Instancia da graça para quem quiser
      */
     public static Cliente getInstance () {
         if ( instancia == null ) {
@@ -42,6 +47,12 @@ class Cliente {
     private Socket socket;
     private String enderecoIPV4Servidor;
 
+    /**
+     * Inicia a conexão com o servidor
+     * @param ip é o ip do servidor a ser conectado, se o ip for nulo, o que ocorrerá no 
+     * inicio da execução do programa, será pedido o IP do servidor, caso contrario,
+     * ele usara o enderecoIPV4Servidor ja existente
+     */
     public void iniciarConexao ( String ip ) {
         if ( ip == null ) {
             enderecoIPV4Servidor = JOptionPane.showInputDialog ( "IP servidor:" );
@@ -67,19 +78,28 @@ class Cliente {
         }
     }
 
+    /**
+     * Envia uma mensagem para o servidor
+     * @param comando recebe o comando a ser enviado
+     * @param message recebe um codigo junto do comando
+     */
     public void enviarMensagemParaServidor ( String comando, String message ) {
         PrintWriter output;
         try {
             output = new PrintWriter ( socket.getOutputStream (), true );
-
-            output.println ( comando + ";" + message );
-
+            output.println ( comando + SEPARADOR + message );
         }
         catch ( IOException ex ) {
             Logger.getLogger ( Cliente.class.getName () ).log ( Level.SEVERE, null, ex );
         }
     }
 
+    /**
+     * Verifica as mensagens que o servidor envia
+     * @return o estado do servidor:
+     *      false caso a conexão tenha sido perdida;
+     *      true caso a conexão esteja ativa
+     */
     private boolean escutarPorMensagemDoServidor () {
         try {
             BufferedReader input = new BufferedReader ( new InputStreamReader ( socket.getInputStream () ) );
@@ -97,6 +117,10 @@ class Cliente {
         }
     }
 
+    /**
+     * Função para  tentar reconectar com o servidor, fechando a conexão antiga 
+     * e tentando reconectar
+     */
     private void processaServidorCaido () {
         try {
             JOptionPane.showMessageDialog ( ClienteFramer.getInstance (), "Servidor caiu!" );

@@ -27,11 +27,11 @@ import org.json.simple.JSONObject;
  */
 public class Resposta extends JFrame implements ActionListener {
 
-    private JSONObject objeto;
-    private String tipo;
-    private boolean lockedWindows;
+    private final JSONObject objeto;
+    private final String tipo;
+    private final boolean lockedWindows;
 
-    private HashMap<JTextField, JTextField> mapa;
+    private final HashMap<JTextField, JTextField> mapa;
 
     public Resposta ( JSONObject json, boolean lockWIndows, String tipo ) {
         super ();
@@ -109,7 +109,7 @@ public class Resposta extends JFrame implements ActionListener {
 
         //this.panel.setLayout ( new FlowLayout () );
         // add ( panel );
-        if ( !tipo.equals ( Producao.FIND ) ) {
+        if ( !tipo.equals (Producao.FIND_REQUEST ) ) {
             JButton button = new JButton ( "Salvar" );
             add ( button );
             button.addActionListener ( this );
@@ -121,6 +121,7 @@ public class Resposta extends JFrame implements ActionListener {
         setVisible ( true );
     }
 
+    @Override
     public void actionPerformed ( ActionEvent evt ) {
         String l = ( tipo.equals ( Producao.INCLUDE_REQUEST ) ? Producao.INCLUDE_COMMIT : Producao.MODIFY_COMMIT );
         StringBuilder sb = new StringBuilder ();

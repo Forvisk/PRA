@@ -16,8 +16,7 @@ public class Principal {
      * @param args the command line arguments
      */
     public static void main ( String[] args ) {
-        Cliente cliente = Cliente.getInstance ();
-        cliente.iniciarConexao ( null );
+        Cliente.getInstance().iniciarConexao( null );
     }
 
 }
