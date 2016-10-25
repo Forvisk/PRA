@@ -21,14 +21,18 @@ import javax.swing.JOptionPane;
  */
 class Cliente {
 
+    private Socket socket;
+    private String username;
+    private String password;
+    private String serverAddress;
+
+    private static Cliente instancia = null;
+
+    private ClienteFramer frame;
+
     private Cliente () {
-        
     }
 
-    /**
-     * Retorna a instancia do cliente
-     * @return única instancia do Cliente
-     */
     public static Cliente getInstance () {
         if ( instancia == null ) {
             instancia = new Cliente ();
@@ -36,27 +40,14 @@ class Cliente {
         return instancia;
     }
 
-    private static Cliente instancia;
-    /**
-     * Socket para realizar a troca de informações
-     */
-    private Socket socket;
-
-    /**
-     * Endereço IPV4 do servidor
-     */
-    private String enderecoIPV4Servidor;
-
-    private ClienteFramer frame;
-
     public void inicio ( String ip ) {
         System.out.println ( "Vai" );
         if ( ip == null ) {
-            enderecoIPV4Servidor = JOptionPane.showInputDialog ( "IP servidor:" );
+            serverAddress = JOptionPane.showInputDialog ( "IP servidor:" );
         }
-        System.out.println ( enderecoIPV4Servidor );
+        System.out.println ( serverAddress );
         try {
-            socket = new Socket ( enderecoIPV4Servidor, 2300 );
+            socket = new Socket ( serverAddress, 2300 );
             frame = ClienteFramer.getInstance ();
             frame.setVisible ( true );
             new Thread () {
@@ -98,7 +89,7 @@ class Cliente {
                 socket.close ();
                 socket = null;
                 ClienteFramer.getInstance ().fecha ();
-                Cliente.getInstance ().inicio ( enderecoIPV4Servidor );
+                Cliente.getInstance ().inicio ( serverAddress );
                 return false;
 
             }
@@ -116,7 +107,7 @@ class Cliente {
                 socket.close ();
                 socket = null;
                 ClienteFramer.getInstance ().fecha ();
-                Cliente.getInstance ().inicio ( enderecoIPV4Servidor );
+                Cliente.getInstance ().inicio ( serverAddress );
             }
             catch ( IOException ex1 ) {
                 Logger.getLogger ( Cliente.class.getName () ).log ( Level.SEVERE, null, ex1 );
@@ -130,7 +121,11 @@ class Cliente {
     }
 
     public String getIpServer () {
-        return enderecoIPV4Servidor;
+        return serverAddress;
+    }
+
+    public String getUsername () {
+        return username;
     }
 
     public void Disconnect () {
