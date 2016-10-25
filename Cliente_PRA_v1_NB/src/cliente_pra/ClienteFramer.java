@@ -150,13 +150,13 @@ public class ClienteFramer extends javax.swing.JFrame {
             }
         }
 
-        Cliente.getInstance ().enviar ( Producao.MODIFY_REQUEST, msg );
+        Cliente.getInstance ().enviarMensagemParaServidor ( Producao.MODIFY_REQUEST, msg );
 
     }//GEN-LAST:event_JBOrderActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Cliente.getInstance ().Disconnect ();
+        Cliente.getInstance ().disconectarCliente ();
         System.exit ( 0 );
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -176,7 +176,7 @@ public class ClienteFramer extends javax.swing.JFrame {
             }
         }
 
-        Cliente.getInstance ().enviar ( Producao.FIND, msg );
+        Cliente.getInstance ().enviarMensagemParaServidor ( Producao.FIND, msg );
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -195,12 +195,12 @@ public class ClienteFramer extends javax.swing.JFrame {
             }
         }
 
-        Cliente.getInstance ().enviar ( Producao.EXCLUDE, msg );
+        Cliente.getInstance ().enviarMensagemParaServidor ( Producao.EXCLUDE, msg );
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        Cliente.getInstance ().enviar ( Producao.INCLUDE_REQUEST, "" );
+        Cliente.getInstance ().enviarMensagemParaServidor ( Producao.INCLUDE_REQUEST, "" );
     }//GEN-LAST:event_jButton4ActionPerformed
 
 

@@ -22,11 +22,12 @@ import javax.swing.JOptionPane;
 class Cliente {
 
     private Cliente () {
-        
+
     }
 
     /**
      * Retorna a instancia do cliente
+     *
      * @return única instancia do Cliente
      */
     public static Cliente getInstance () {
@@ -37,33 +38,23 @@ class Cliente {
     }
 
     private static Cliente instancia;
-    /**
-     * Socket para realizar a troca de informações
-     */
-    private Socket socket;
 
-    /**
-     * Endereço IPV4 do servidor
-     */
+    private Socket socket;
     private String enderecoIPV4Servidor;
 
-    private ClienteFramer frame;
-
-    public void inicio ( String ip ) {
-        System.out.println ( "Vai" );
+    public void iniciarConexao ( String ip ) {
         if ( ip == null ) {
             enderecoIPV4Servidor = JOptionPane.showInputDialog ( "IP servidor:" );
         }
-        System.out.println ( enderecoIPV4Servidor );
+
         try {
             socket = new Socket ( enderecoIPV4Servidor, 2300 );
-            frame = ClienteFramer.getInstance ();
-            frame.setVisible ( true );
+            ClienteFramer.getInstance ().setVisible ( true );
             new Thread () {
                 @Override
                 public void run () {
                     while ( true ) {
-                        if ( !receber () ) {
+                        if ( !escutarPorMensagemDoServidor () ) {
                             break;
                         }
                     }
@@ -76,7 +67,7 @@ class Cliente {
         }
     }
 
-    public void enviar ( String comando, String message ) {
+    public void enviarMensagemParaServidor ( String comando, String message ) {
         PrintWriter output;
         try {
             output = new PrintWriter ( socket.getOutputStream (), true );
@@ -89,39 +80,33 @@ class Cliente {
         }
     }
 
-    private boolean receber () {
+    private boolean escutarPorMensagemDoServidor () {
         try {
             BufferedReader input = new BufferedReader ( new InputStreamReader ( socket.getInputStream () ) );
             String answer = input.readLine ();
             if ( answer == null ) {
-                JOptionPane.showMessageDialog ( null, "Servidor caiu!" );
-                socket.close ();
-                socket = null;
-                ClienteFramer.getInstance ().fecha ();
-                Cliente.getInstance ().inicio ( enderecoIPV4Servidor );
+                processaServidorCaido ();
                 return false;
-
             }
-            System.out.println ( answer );
-            if ( Producao.getInstance ().messageToRead ( answer ) ) {
-                System.out.println ( "OK" );
-            } else {
-                System.out.println ( "NO OK" );
-            }
+            Producao.getInstance ().messageToRead ( answer );
             return true;
         }
         catch ( IOException ex ) {
-            try {
-                JOptionPane.showMessageDialog ( null, "Servidor caiu!" );
-                socket.close ();
-                socket = null;
-                ClienteFramer.getInstance ().fecha ();
-                Cliente.getInstance ().inicio ( enderecoIPV4Servidor );
-            }
-            catch ( IOException ex1 ) {
-                Logger.getLogger ( Cliente.class.getName () ).log ( Level.SEVERE, null, ex1 );
-            }
+            processaServidorCaido ();
             return false;
+        }
+    }
+
+    private void processaServidorCaido () {
+        try {
+            JOptionPane.showMessageDialog ( ClienteFramer.getInstance (), "Servidor caiu!" );
+            socket.close ();
+            socket = null;
+            ClienteFramer.getInstance ().fecha ();
+            Cliente.getInstance ().iniciarConexao ( enderecoIPV4Servidor );
+        }
+        catch ( IOException ex ) {
+            Logger.getLogger ( Cliente.class.getName () ).log ( Level.SEVERE, null, ex );
         }
     }
 
@@ -133,7 +118,7 @@ class Cliente {
         return enderecoIPV4Servidor;
     }
 
-    public void Disconnect () {
+    public void disconectarCliente () {
         try {
             socket.close ();
         }

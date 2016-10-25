@@ -17,7 +17,7 @@ public class Principal {
      */
     public static void main ( String[] args ) {
         Cliente cliente = Cliente.getInstance ();
-        cliente.inicio ( null );
+        cliente.iniciarConexao ( null );
     }
 
 }

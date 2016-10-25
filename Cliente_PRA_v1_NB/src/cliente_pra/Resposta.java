@@ -144,7 +144,7 @@ public class Resposta extends JFrame implements ActionListener {
         }
 
         String resp = new String ( sb );
-        Cliente.getInstance ().enviar ( l, resp );
+        Cliente.getInstance ().enviarMensagemParaServidor ( l, resp );
         System.out.println ( "Msg: " + resp );
         dispose ();
     }
