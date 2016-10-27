@@ -1,11 +1,9 @@
 package praservidorarquivo;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 /**
  * <h1>Leitor</h1>
@@ -28,47 +26,41 @@ public class Leitor {
      *
      * @param arqv é o nome do arquivo a ser aberto
      *
-     * @return uma arvore contendo todos os dados do arquivo em uma
-     *         {@link java.util.TreeSet}
-     *
      * @see java.util.TreeSet
      */
-    TreeSet<Dado> LeEProcessa ( String arqv ) {
-        BufferedReader leitor = null;
+    public void LeEProcessa ( String arqv ) {
+        BufferedReader leitor;
         try {
             leitor = new BufferedReader ( new FileReader ( arqv ) );
         }
-        catch ( FileNotFoundException e ) {
+        catch ( Exception e ) {
             e.printStackTrace ();
+            return;
         }
 
-        String cLine;
         int linha_atual = 0;
         int[] maiores = null;
 
         try {
             String linha = leitor.readLine ();
-
             String[] nomeCabecalhos = SeparaLinha ( linha );
-
             maiores = new int[ nomeCabecalhos.length + 1 ];
-
             linha_atual = leDados ( leitor, linha_atual, maiores );
-
             verificaTamanhoCabecalhos ( maiores, nomeCabecalhos );
-
+            maiores[ maiores.length - 1 ] = Utilitarios.getNumberOfDigits ( linha_atual );
+            GerenciadorArquivo.getInstance ().setValoresMaiores ( maiores );
         }
         catch ( IOException e ) {
             e.printStackTrace ();
         }
-        maiores[ maiores.length - 1 ] = Utilitarios.getNumberOfDigits ( linha_atual );
-
-        GerenciadorArquivo.getInstance ().setValoresMaiores ( maiores );
-        return null;
     }
 
     /**
      * Metodo que verifica o numero de caracteres do cabecalho para uso futuro
+     *
+     * @param maiores        contem o tamanho dos maiores elementos, em suas
+     *                       respectivas posicoes
+     * @param nomeCabecalhos contem os cabecalhos
      */
     private void verificaTamanhoCabecalhos ( int[] maiores,
             String[] nomeCabecalhos ) {
@@ -83,28 +75,42 @@ public class Leitor {
     }
 
     /**
-     * Metodo para ler os dados do arquivo de entrada
+     * Le os dados do arquivo
+     *
+     * @param leitor                origem dos dados
+     * @param linhaAtual            linha que paro de ler os ultimos dados, para
+     *                              podermos
+     *                              adicionar essa informação na arvore
+     * @param maioresTamanhosDeDado tamanho de cada dado da linha
+     *
+     * @return a linha atual
+     *
+     * @throws IOException
      */
-    private int leDados ( BufferedReader leitor, int linha_atual, int[] maiores )
+    private int leDados ( BufferedReader leitor, int linhaAtual,
+            int[] maioresTamanhosDeDado )
             throws IOException {
         String cLine;
         while ( ( cLine = leitor.readLine () ) != null ) {
-            linha_atual++;
+            linhaAtual++;
             String[] dados = SeparaLinha ( cLine );
-            Producao.AdicionaNaArvore ( linha_atual, dados );
+            Producao.AdicionaNaArvore ( linhaAtual, dados );
             int i = 0;
 
             for ( String string : dados ) {
-                if ( string.length () > maiores[ i ] ) {
-                    maiores[ i ] = string.length ();
+                if ( string.length () > maioresTamanhosDeDado[ i ] ) {
+                    maioresTamanhosDeDado[ i ] = string.length ();
                 }
                 i++;
             }
         }
-        return linha_atual;
+        return linhaAtual;
     }
 
     /**
+     * Separa a linha em diversos dados. Usavamos String.split() porém pode
+     * haver {@code "} no meio do arquvio
+     *
      * @param s String a ser separada
      *
      * @return Vetor contendo todos os campos da string separados pelo SEPARADOR

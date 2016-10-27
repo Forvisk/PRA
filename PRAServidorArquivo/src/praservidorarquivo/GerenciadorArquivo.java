@@ -1,8 +1,11 @@
 package praservidorarquivo;
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.TreeSet;
+import org.json.simple.JSONObject;
 
 /**
  * <h1>Gerenciador Arquivo</h1>
@@ -12,6 +15,11 @@ import java.util.TreeSet;
  * @author usuario
  */
 public class GerenciadorArquivo {
+
+    private static final String TAG_MODIFICAR = "modify";
+    private static final String TAG_DELETAR = "delete";
+    private static final String TAG_INSERIR = "insert";
+    private static final String TAG_PROCURAR = "find";
 
     /**
      * Árvore que conterá os dados, sendo automaticamente balanceada
@@ -62,6 +70,8 @@ public class GerenciadorArquivo {
      */
     private static final String ARQUIVO3 = "users.csv";
 
+    HashMap<Socket, Integer> dadosEmEdicao;
+
     /**
      * Método usado para retornar a instancia unica e atual da classe.
      *
@@ -78,6 +88,7 @@ public class GerenciadorArquivo {
      * Construtor, onde serão alocados a {@link TreeSet} e o {@link ArrayList}
      */
     private GerenciadorArquivo () {
+        dadosEmEdicao = new HashMap<> ();
         arvorePrincipal = new TreeSet<> ();
         cabecalho = new ArrayList<> ();
     }
@@ -160,32 +171,26 @@ public class GerenciadorArquivo {
     /**
      * Retorna o conteúdo da linha em um determinado indice.
      *
-     * @param arg é o indice da linha
+     * @param _indice é o indice da linha
      *
      * @return JSON de resposta ao cliente
      */
-    String getDadoAtIndexAsString ( final int _indice ) {
+    public String getDadoAtIndexAsString ( final int _indice ) {
 
         Dado dado = getDadoAtIndex ( _indice );
 
-        if ( dado == null ) {
-            return String.format ( "{\"status\": \"Dado não existe no indice especificado: %d\", \"erro\": 1}", _indice );
+        if ( dado == null || dado.isDeletado () ) {
+            return String.format ( "{\"status\":\"Dado não existe no indice especificado: %d\",\"erro\": 1, \"info\": \"" + TAG_PROCURAR + "\"}", _indice );
         }
 
         StringBuilder sb = new StringBuilder ();
-
         sb.append ( "{\"indice\": " );
         sb.append ( _indice );
-        sb.append ( ", \"dados\": [" );
-
-        dado.getDadosDaLinha ().stream ().forEach ( ( s ) -> {
-            sb.append ( String.format ( "\"%s\"", s ) );
-        } );
-
-        sb.append ( "]}" );
+        sb.append ( ", \"status\": {" );
+        sb.append ( Utilitarios.dadoToJSONString ( dado ) );
+        sb.append ( "}, \"acao\": \"" + TAG_PROCURAR + "\"}" );
 
         String out = new String ( sb );
-        System.out.println ( out );
         JanelaServidor.getInstance ().AddMensagemLog ( out, -1 );
 
         return out;
@@ -201,13 +206,16 @@ public class GerenciadorArquivo {
     public String delDado ( final int _indice ) {
         Dado dado = getDadoAtIndex ( _indice );
 
-        if ( dado == null ) {
-            return String.format ( "{\"status\": \"Dado não existe no indice especificado: %d\", \"erro\": 1}", _indice );
+        if ( dado == null || dado.isDeletado () ) {
+            return String.format ( "{\"status\":\"Dado não existe no indice especificado: %d\",\"erro\": 1, \"info\": \"" + TAG_PROCURAR + "\"}", _indice );
+        }
+
+        if ( dado.taEditando () ) {
+            return "{\"status\": \"Dado esta sendo editado!\", \"erro\": 2, \"info\": \"" + TAG_DELETAR + "\"}";
         }
 
         dado.setDeletado ( true );
-
-        return String.format ( "{\"status\": \"Dado %d deletado\"}", _indice );
+        return String.format ( "{\"status\": \"Dado %d deletado\", \"info\": \"" + TAG_DELETAR + "\"}", _indice );
     }
 
     /**
@@ -217,32 +225,55 @@ public class GerenciadorArquivo {
      * @return
      */
     public String insertDado ( final String[] valores ) {
-        Producao.AdicionaNaArvore ( getArvore ().size (), valores );
-        return String.format ( "{\"status\": \"Dado inserido\"}" );
+        JSONObject json = Utilitarios.stringToJSON ( valores[ 1 ] );
+        JSONObject status = ( JSONObject ) json.get ( "status" );
+
+        String[] listao = new String[ getArvore ().first ().getDadosDaLinha ().size () ];
+
+        for ( Object key : status.keySet () ) {
+            //based on you key types
+            String keyStr = ( String ) key;
+            Object keyValue = status.get ( keyStr );
+            int indx = cabecalho.indexOf ( keyStr );
+            listao[ indx ] = keyValue.toString ();
+        }
+
+        Producao.AdicionaNaArvore ( getArvore ().size (), listao );
+
+        return String.format ( "{\"status\": \"Dado inserido, Indice: %d\", \"info\": \"%s\"}", getArvore ().size (), TAG_INSERIR );
     }
 
     /**
      *
-     * @param _indice
      * @param valores
      *
      * @return
      */
-    public String modificaDado ( final int _indice, final String[] valores ) {
-        
-        Dado dado = getDadoAtIndex ( _indice );
+    public String modificaDado ( final String[] valores ) {
 
-        if ( dado == null ) {
-            return String.format ( "{\"status\": \"Dado não existe no indice especificado: %d\", \"erro\": 1}", _indice );
+        JSONObject json = Utilitarios.stringToJSON ( valores[ 0 ] );
+        JSONObject status = ( JSONObject ) json.get ( "status" );
+
+        int indice = Integer.parseInt ( ( String ) json.get ( "indice" ) );
+
+        Dado dado = getDadoAtIndex ( indice );
+
+        String[] listao = new String[ dado.getDadosDaLinha ().size () ];
+
+        for ( Object key : status.keySet () ) {
+            //based on you key types
+            String keyStr = ( String ) key;
+            Object keyValue = status.get ( keyStr );
+            int indx = cabecalho.indexOf ( keyStr );
+            listao[ indx ] = keyValue.toString ();
         }
-        
-        ArrayList<String> lista = new ArrayList<>();
-        
-        lista.addAll ( Arrays.asList ( valores ) );
-        
+
+        ArrayList<String> lista = new ArrayList<> ();
+        lista.addAll ( Arrays.asList ( listao ) );
         dado.setValores ( lista );
-        
-        return String.format ( "{\"status\": \"Dado inserido\"}" );
+
+        dado.setEstadoEditando ( false );
+        return String.format ( "{\"status\": \"Dado modificado\", \"info\": \"" + TAG_MODIFICAR + "\"}" );
     }
 
     /**
@@ -254,12 +285,57 @@ public class GerenciadorArquivo {
      */
     private Dado getDadoAtIndex ( final int index ) {
         Dado ret = null;
-        for ( Dado d : getArvore () ) {
-            if ( d.getNumeroLinha () == index && d.isDeletado () == false ) {
-                ret = d;
+        synchronized ( getArvore () ) {
+            for ( Dado d : getArvore () ) {
+                if ( d.getNumeroLinha () == index ) {
+                    ret = d;
+                }
             }
         }
         return ret;
+    }
+
+    public String requestInsercao ( String[] _args ) {
+        StringBuilder sb = new StringBuilder ();
+
+        sb.append ( "{\"status\": {" );
+        for ( String s : cabecalho ) {
+            sb.append ( "\"" );
+            sb.append ( s );
+            sb.append ( "\": \"\"," );
+        }
+        sb.append ( "}, \"acao\": \"" + TAG_INSERIR + "\"}" );
+
+        String out = new String ( sb );
+        JanelaServidor.getInstance ().AddMensagemLog ( out, -1 );
+
+        return out;
+    }
+
+    public String requestModifica ( int _indice ) {
+        Dado dado = getDadoAtIndex ( _indice );
+
+        if ( dado == null || dado.isDeletado () ) {
+            return String.format ( "{\"status\":\"Dado não existe no indice especificado: %d\",\"erro\": 1, \"info\": \"" + TAG_PROCURAR + "\"}", _indice );
+        }
+
+        if ( dado.taEditando () ) {
+            return "{\"status\": \"Dado está sendo editado!\", \"erro\": 2, \"info\": \"" + TAG_MODIFICAR + "\"}";
+        }
+
+        dado.setEstadoEditando ( true );
+
+        StringBuilder sb = new StringBuilder ();
+        sb.append ( "{\"indice\": " );
+        sb.append ( _indice );
+        sb.append ( ", \"status\": {" );
+        sb.append ( Utilitarios.dadoToJSONString ( dado ) );
+        sb.append ( "}, \"acao\": \"" + TAG_MODIFICAR + "\"}" );
+
+        String out = new String ( sb );
+        JanelaServidor.getInstance ().AddMensagemLog ( out, -1 );
+
+        return out;
     }
 
 }

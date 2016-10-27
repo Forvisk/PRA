@@ -23,9 +23,8 @@ public class GerenciadorServidor {
 
     /**
      * {@link String} que será usada para serparar os diversos argumentos que o
-     * cliente
-     * enviará para o servidor por uma {@link String} pela conexão TCP entre
-     * eles
+     * cliente enviará para o servidor por uma {@link String} pela conexão TCP
+     * entre eles
      */
     private static final String STRING_SPLIT = ";";
 
@@ -65,7 +64,7 @@ public class GerenciadorServidor {
     /**
      * Porta que o servidor está utilizando
      */
-    private int porta;
+    private final int porta;
 
     /**
      * Váriavel para armazenar o {@link Socket} atual do servidor
@@ -73,10 +72,12 @@ public class GerenciadorServidor {
     private ServerSocket socket;
 
     /**
-     * Uma {@link List} que contém todos os clientes conectados
-     * TODO: retirar clientes que foram desconectados.
+     * Uma {@link List} que contém todos os clientes conectados TODO: retirar
+     * clientes que foram desconectados.
      */
-    private List<Socket> clientes;
+    private final List<Socket> clientes;
+
+    private boolean serverClosed = false;
 
     /**
      * Construtor que precisa de uma porta de rede para iniciar o servidor
@@ -91,10 +92,10 @@ public class GerenciadorServidor {
     }
 
     /**
-     * Inicia o Listener do servidor.
-     * Serve para escutar e aceitar todos os clientes e suas mensagens.
+     * Inicia o Listener do servidor. Serve para escutar e aceitar todos os
+     * clientes e suas mensagens.
      */
-    public void IniciarListener () {
+    private void IniciarListener () {
         try {
             socket = new ServerSocket ( porta );
             ListenConnections ();
@@ -111,7 +112,9 @@ public class GerenciadorServidor {
     private void ListenConnections () {
         new Thread ( () -> {
             while ( true ) {
-
+                if ( serverClosed ) {
+                    return;
+                }
                 try {
                     Socket cliente = socket.accept ();
                     clientes.add ( cliente );
@@ -119,7 +122,7 @@ public class GerenciadorServidor {
                     JanelaServidor.getInstance ().AddMensagemLog ( "Cliente conectado", clientes.indexOf ( cliente ) + 1 );
                 }
                 catch ( IOException ex ) {
-                    Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
+                    System.out.println ( "Socket encerrando.." );
                 }
             }
         } ).start ();
@@ -137,15 +140,17 @@ public class GerenciadorServidor {
                     BufferedReader inputCliente = new BufferedReader ( new InputStreamReader ( cliente.getInputStream () ) );
                     String msg = inputCliente.readLine ();
                     if ( msg == null ) {
-                        JanelaServidor.getInstance ().AddMensagemLog ( "Cliente caiu", clientes.indexOf ( cliente ) );
+                        JanelaServidor.getInstance ().AddMensagemLog ( "Cliente caiu", clientes.indexOf ( cliente ) + 1 );
+                        clientes.remove ( cliente );
                         break;
                     }
-                    JanelaServidor.getInstance ().AddMensagemLog ( msg, clientes.indexOf ( cliente ) );
+                    JanelaServidor.getInstance ().AddMensagemLog ( msg, clientes.indexOf ( cliente ) + 1 );
                     ProcessaMensagem ( msg, cliente );
                 }
                 catch ( IOException ex ) {
-                    JanelaServidor.getInstance ().AddMensagemLog ( "Cliente caiu", clientes.indexOf ( cliente ) );
+                    JanelaServidor.getInstance ().AddMensagemLog ( "Cliente caiu", clientes.indexOf ( cliente ) + 1 );
                     Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
+                    clientes.remove ( cliente );
                     break;
                 }
             }
@@ -154,8 +159,8 @@ public class GerenciadorServidor {
 
     /**
      * Envia uma mensagem para todos os clientes na
-     * {@link List} {@link GerenciadorServidor#clientes}.
-     * Não mandaremos a mensagem para o cliente dono da mensagem
+     * {@link List} {@link GerenciadorServidor#clientes}. Não mandaremos a
+     * mensagem para o cliente dono da mensagem
      *
      * @param msg     mensagem a ser enviada para os clientes
      * @param cliente fonte da mensagem
@@ -188,51 +193,76 @@ public class GerenciadorServidor {
     private void ProcessaMensagem ( String msg, Socket cliente ) {
 
         // Vamos processar a mensagem que o cliente enviou
-        // Se possuir o formato "algumacoisa;outracoisa;..." entao
+        // Se possuir o formato "algumacoisa;outracoisa..." entao
         // podemos usa-la para descobrir os argumentos
-        String[] args = msg.split ( STRING_SPLIT );
+        // Mudei para usar estruturas JSON
+        String[] args = msg.split ( STRING_SPLIT, 2 );
 
         // Se o nr de argumentos for 2 ou mais, entao segue o formato "coisa;outracoisa;..."
-        if ( args.length > 1 ) {
+        if ( args.length >= 1 ) {
 
             // Temos que certificar que o argumento que foi mandado é valido!
             if ( PRAServidorArquivo.mapMetodos.containsKey ( args[ 0 ] ) ) {
 
                 // Depois da verificação, podemos prosseguir executando a funcão
-                String resposta = PRAServidorArquivo.mapMetodos.get ( args[ 0 ] ).method ( args );
-                JanelaServidor.getInstance ().AddMensagemLog ( "pedido: " + args[ 0 ], clientes.indexOf ( cliente ) );
+                String resposta = PRAServidorArquivo.mapMetodos.get ( args[ 0 ] ).executar ( args );
+                JanelaServidor.getInstance ().AddMensagemLog ( "pedido: " + args[ 0 ], clientes.indexOf ( cliente ) + 1 );
 
                 // Agora enviamos a resposta ao cliente
                 try {
                     PrintWriter paraCliente = new PrintWriter ( cliente.getOutputStream () );
                     paraCliente.write ( resposta + "\n" );
                     paraCliente.flush ();
-                    JanelaServidor.getInstance ().AddMensagemLog ( "Envia msg : " + msg, clientes.indexOf ( cliente ) );
+                    JanelaServidor.getInstance ().AddMensagemLog ( "Envia msg : " + msg, clientes.indexOf ( cliente ) + 1 );
                 }
                 catch ( IOException ex ) {
 
                     // Deu erro ao enviar a mensagem
                     Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
                 }
-            } else {
-                try {
-
-                    // Argumento que o cliente enviou é invalido
-                    // Mandamos resposta informando-o
-                    PrintWriter paraCliente = new PrintWriter ( cliente.getOutputStream () );
-                    paraCliente.write ( "argumento_invalido\n" );
-                    paraCliente.flush ();
-                    JanelaServidor.getInstance ().AddMensagemLog ( "Enviou msg : " + msg, clientes.indexOf ( cliente ) );
-                }
-                catch ( IOException ex ) {
-                    Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
-                }
+                return;
             }
-        } else {
+            try {
 
-            // A mensagem do cliente não segue o formato desejado
-            EnviaParaOsClientes ( "Vou comer kibe e coxinha. É o combo kibexinha", cliente );
+                // Argumento que o cliente enviou é invalido
+                // Mandamos resposta informando-o
+                PrintWriter paraCliente = new PrintWriter ( cliente.getOutputStream () );
+                paraCliente.write ( "{\"erro\":1, \"status\": \"argumento_invalido\"}\n" );
+                paraCliente.flush ();
+                JanelaServidor.getInstance ().AddMensagemLog ( "Enviou msg : " + msg, clientes.indexOf ( cliente ) + 1 );
+            }
+            catch ( IOException ex ) {
+                Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
+            }
+            return;
         }
+        // A mensagem do cliente não segue o formato desejado
+        // NUNCA DEVE ACONTECER ~> a não ser que não seja o nosso cliente
+        // entao mandaremos uma mensagem de amor <3
+        EnviaParaOsClientes ( "Vou comer quibe e coxinha. É o combo quibexinha", cliente );
+
+    }
+
+    /**
+     * Fecha a conexão com o servidor. Fecha o socket.
+     */
+    public void Close () {
+        serverClosed = true;
+        try {
+            socket.close ();
+        }
+        catch ( IOException ex ) {
+            Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
+        }
+    }
+
+    /**
+     * Retorna a lista de clientes conectados
+     *
+     * @return lista de sockets dos clientes conectados
+     */
+    public List<Socket> getClientes () {
+        return clientes;
     }
 
 }

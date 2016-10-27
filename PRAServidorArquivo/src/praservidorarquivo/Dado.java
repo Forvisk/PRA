@@ -40,6 +40,11 @@ public class Dado implements Comparable {
     private boolean foiDeletado;
 
     /**
+     * Booleano que indica se o Dado está ou não sendo editado.
+     */
+    private boolean estadoEditando;
+
+    /**
      * Função que retornará todos os dados contidos em nosso
      * {@link ArrayList} {@link Dado#dadosDaLinha}
      *
@@ -69,16 +74,29 @@ public class Dado implements Comparable {
     }
 
     /**
-     * Altera o estado do dado para deletado ou não
+     * Retorna se o dado esta ou não sendo editado
      *
-     * @param del o novo estado do dado
+     * @return estado do dado
      */
-    public void setDeletado ( boolean del ) {
-        foiDeletado = del;
+    public boolean taEditando () {
+        return estadoEditando;
     }
 
-    public void setValores ( ArrayList<String> _valores ) {
-        dadosDaLinha = _valores;
+    /**
+     * Altera o estado do dado para deletado ou não
+     *
+     * @param estado o novo estado do dado
+     */
+    public void setDeletado ( boolean estado ) {
+        foiDeletado = estado;
+    }
+    
+    /**
+     * Atualiza os dados
+     * @param valores novos dados
+     */
+    public void setValores ( ArrayList<String> valores ) {
+        dadosDaLinha = valores;
     }
 
     /**
@@ -92,6 +110,17 @@ public class Dado implements Comparable {
         dadosDaLinha = dado;
         numeroLinha = linha;
         foiDeletado = false;
+        estadoEditando = false;
+    }
+
+    /**
+     * Muda o estado de edição do dado para bloquear ou liberar o dado para
+     * outros clientes editarem o mesmo.
+     *
+     * @param estado estado de edição
+     */
+    public void setEstadoEditando ( boolean estado ) {
+        estadoEditando = estado;
     }
 
     @Override
@@ -109,7 +138,6 @@ public class Dado implements Comparable {
 
     @Override
     public String toString () {
-        return String.format ( "Dado na posição %d", getNumeroLinha () );
+        return String.format ( "Dado na posição %d, possui %s", getNumeroLinha (), getDadosDaLinha () );
     }
-
 }
