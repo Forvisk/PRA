@@ -22,35 +22,6 @@ public class GerenciadorArquivo {
     private static final String TAG_PROCURAR = "find";
 
     /**
-     * Árvore que conterá os dados, sendo automaticamente balanceada
-     * gracas ao {@link TreeSet}. Cada nó da arvore é um {@link Dado}
-     */
-    private final TreeSet<Dado> arvorePrincipal;
-
-    /**
-     * Cabecalho do arquivo a ser processado.
-     * <p>
-     * Exemplo: Nome, id, email, idade, etc.
-     */
-    private final ArrayList<String> cabecalho;
-
-    /**
-     * Quantidade máxima de caracteres que um determinado campo pode
-     * ter. Trabalha em conjunto do {@link GerenciadorArquivo#cabecalho}
-     * <p>
-     * Exemplo: se cabecalho[0] = "Nome", e valoresMaiores[0] = 10 então o
-     * máximo de caracteres que todos os nomes poderão ter é 10
-     */
-    private int[] valoresMaiores;
-
-    /**
-     * Quantidade de dados que o arquivo possui.
-     * <p>
-     * Por exemplo, possui 3 dados: Nome, idade e ID.
-     */
-    private int numeroDados = 0;
-
-    /**
      * Instancia atual e única da classe.
      */
     private static GerenciadorArquivo instance = null;
@@ -70,8 +41,6 @@ public class GerenciadorArquivo {
      */
     private static final String ARQUIVO3 = "users.csv";
 
-    HashMap<Socket, Integer> dadosEmEdicao;
-
     /**
      * Método usado para retornar a instancia unica e atual da classe.
      *
@@ -83,6 +52,33 @@ public class GerenciadorArquivo {
         }
         return instance;
     }
+
+    /**
+     * Árvore que conterá os dados, sendo automaticamente balanceada
+     * gracas ao {@link TreeSet}. Cada nó da arvore é um {@link Dado}
+     */
+    private final TreeSet<Dado> arvorePrincipal;
+    /**
+     * Cabecalho do arquivo a ser processado.
+     * <p>
+     * Exemplo: Nome, id, email, idade, etc.
+     */
+    private final ArrayList<String> cabecalho;
+    /**
+     * Quantidade máxima de caracteres que um determinado campo pode
+     * ter. Trabalha em conjunto do {@link GerenciadorArquivo#cabecalho}
+     * <p>
+     * Exemplo: se cabecalho[0] = "Nome", e valoresMaiores[0] = 10 então o
+     * máximo de caracteres que todos os nomes poderão ter é 10
+     */
+    private int[] valoresMaiores;
+    /**
+     * Quantidade de dados que o arquivo possui.
+     * <p>
+     * Por exemplo, possui 3 dados: Nome, idade e ID.
+     */
+    private int numeroDados = 0;
+    HashMap<Socket, Integer> dadosEmEdicao;
 
     /**
      * Construtor, onde serão alocados a {@link TreeSet} e o {@link ArrayList}
@@ -141,21 +137,21 @@ public class GerenciadorArquivo {
     }
 
     /**
-     * Retorn o inteiro {@link GerenciadorArquivo#numeroDados}.
-     *
-     * @return o numero de items do arquivo
-     */
-    public int getNumeroDados () {
-        return numeroDados;
-    }
-
-    /**
      * Atualiza o vetor {@link GerenciadorArquivo#valoresMaiores}.
      *
      * @param novosValores novo vetor
      */
     public void setValoresMaiores ( final int[] novosValores ) {
         valoresMaiores = novosValores;
+    }
+
+    /**
+     * Retorn o inteiro {@link GerenciadorArquivo#numeroDados}.
+     *
+     * @return o numero de items do arquivo
+     */
+    public int getNumeroDados () {
+        return numeroDados;
     }
 
     /**
@@ -210,7 +206,7 @@ public class GerenciadorArquivo {
             return String.format ( "{\"status\":\"Dado não existe no indice especificado: %d\",\"erro\": 1, \"info\": \"" + TAG_PROCURAR + "\"}", _indice );
         }
 
-        if ( dado.taEditando () ) {
+        if ( dado.isEditando () ) {
             return "{\"status\": \"Dado esta sendo editado!\", \"erro\": 2, \"info\": \"" + TAG_DELETAR + "\"}";
         }
 
@@ -272,27 +268,8 @@ public class GerenciadorArquivo {
         lista.addAll ( Arrays.asList ( listao ) );
         dado.setValores ( lista );
 
-        dado.setEstadoEditando ( false );
+        dado.setEditando ( false );
         return String.format ( "{\"status\": \"Dado modificado\", \"info\": \"" + TAG_MODIFICAR + "\"}" );
-    }
-
-    /**
-     * Dado um indice, procura a linha deste dado.
-     *
-     * @param index indice da linha a ser procurada
-     *
-     * @return Dado encontrado, null se não existir
-     */
-    private Dado getDadoAtIndex ( final int index ) {
-        Dado ret = null;
-        synchronized ( getArvore () ) {
-            for ( Dado d : getArvore () ) {
-                if ( d.getNumeroLinha () == index ) {
-                    ret = d;
-                }
-            }
-        }
-        return ret;
     }
 
     public String requestInsercao ( String[] _args ) {
@@ -319,11 +296,11 @@ public class GerenciadorArquivo {
             return String.format ( "{\"status\":\"Dado não existe no indice especificado: %d\",\"erro\": 1, \"info\": \"" + TAG_PROCURAR + "\"}", _indice );
         }
 
-        if ( dado.taEditando () ) {
+        if ( dado.isEditando () ) {
             return "{\"status\": \"Dado está sendo editado!\", \"erro\": 2, \"info\": \"" + TAG_MODIFICAR + "\"}";
         }
 
-        dado.setEstadoEditando ( true );
+        dado.setEditando ( true );
 
         StringBuilder sb = new StringBuilder ();
         sb.append ( "{\"indice\": " );
@@ -336,6 +313,25 @@ public class GerenciadorArquivo {
         JanelaServidor.getInstance ().AddMensagemLog ( out, -1 );
 
         return out;
+    }
+
+    /**
+     * Dado um indice, procura a linha deste dado.
+     *
+     * @param index indice da linha a ser procurada
+     *
+     * @return Dado encontrado, null se não existir
+     */
+    private Dado getDadoAtIndex ( final int index ) {
+        Dado ret = null;
+        synchronized ( getArvore () ) {
+            for ( Dado d : getArvore () ) {
+                if ( d.getNumeroLinha () == index ) {
+                    ret = d;
+                }
+            }
+        }
+        return ret;
     }
 
 }

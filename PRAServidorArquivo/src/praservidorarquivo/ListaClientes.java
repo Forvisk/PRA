@@ -17,7 +17,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 /**
- * 
+ * Interface gráfica para se ter controle sobre os clientes
+ *
  * @author Gustavo Diel ( UDESC )
  */
 public class ListaClientes extends javax.swing.JFrame {

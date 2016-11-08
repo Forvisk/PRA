@@ -92,6 +92,28 @@ public class GerenciadorServidor {
     }
 
     /**
+     * Fecha a conexão com o servidor. Fecha o socket.
+     */
+    public void Close () {
+        serverClosed = true;
+        try {
+            socket.close ();
+        }
+        catch ( IOException ex ) {
+            Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
+        }
+    }
+
+    /**
+     * Retorna a lista de clientes conectados
+     *
+     * @return lista de sockets dos clientes conectados
+     */
+    public List<Socket> getClientes () {
+        return clientes;
+    }
+
+    /**
      * Inicia o Listener do servidor. Serve para escutar e aceitar todos os
      * clientes e suas mensagens.
      */
@@ -241,28 +263,6 @@ public class GerenciadorServidor {
         // entao mandaremos uma mensagem de amor <3
         EnviaParaOsClientes ( "Vou comer quibe e coxinha. É o combo quibexinha", cliente );
 
-    }
-
-    /**
-     * Fecha a conexão com o servidor. Fecha o socket.
-     */
-    public void Close () {
-        serverClosed = true;
-        try {
-            socket.close ();
-        }
-        catch ( IOException ex ) {
-            Logger.getLogger ( GerenciadorServidor.class.getName () ).log ( Level.SEVERE, null, ex );
-        }
-    }
-
-    /**
-     * Retorna a lista de clientes conectados
-     *
-     * @return lista de sockets dos clientes conectados
-     */
-    public List<Socket> getClientes () {
-        return clientes;
     }
 
 }

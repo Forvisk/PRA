@@ -10,6 +10,13 @@ import java.util.Map;
  * <p>
  * Serve também para declarar algumas constantes e preencher o dicionário
  * de funções que o cliente poderá executar
+ * <p>
+ * <h2>Design Patterns neste projeto:</h2>
+ * <h3>Singleton</h3>
+ * <h3>Flags</h3>
+ * <h3>Factory Method</h3>
+ * <h3>Asynchrnous Method Invocation</h3>
+ * <h3>Command</h3>
  *
  * @author Gustavo
  * @author Adriano
@@ -87,7 +94,8 @@ class PRAServidorArquivo {
 
         /*
          * INCLUDE_REQUEST faz um pedido para iniciar a inclusão de um dado
-         * O servidor deve retornar uma string contendo todos os campos que o cliente deve preencher
+         * O servidor deve retornar uma string contendo todos os campos que o
+         * cliente deve preencher
          */
         mapMetodos.put ( INCLUDE_REQUEST, ( IMetodo ) ( String[] args ) -> {
             return GerenciadorArquivo.getInstance ().requestInsercao (
@@ -97,7 +105,8 @@ class PRAServidorArquivo {
 
         /*
          * MODIFY_REQUEST é para quando o cliente pede para editar um dado
-         * O servidor deve entregar o dado para o cliente e travar o dado para edições
+         * O servidor deve entregar o dado para o cliente e travar o dado para
+         * edições
          */
         mapMetodos.put ( MODIFY_REQUEST, ( IMetodo ) ( String[] args ) -> {
             return GerenciadorArquivo.getInstance ().requestModifica (
@@ -108,7 +117,7 @@ class PRAServidorArquivo {
         /*
          * INCLUDE_COMMIT o cliente comita ( finaliza ) a inclusao do dado.
          * O servidor deve incluir o dado e retornar seu indice
-         * 
+         *
          * TODO: Precisamos fazer a checagem dos dados!!!!
          */
         mapMetodos.put ( INCLUDE_COMMIT, ( IMetodo ) ( String[] args ) -> {

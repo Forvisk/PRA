@@ -1,0 +1,9 @@
+1. Ler e verificar oportunidade de usar os seguintes design patterns
+   a. Strategy
+    R: Podemos usar o Strategy para executar as funções para o cliente. Exemplo no arquivo IStrategyFuncao.java
+   b. Facade
+    R: Como no Strategy, podemos usar para executar as funcoes do cliente. Exemplo no arqvuio IFacadeFuncao.java
+   c. Template
+    R: Nao vou falar onde podemos usar. Mas posso afirmar que ja foi falado aqui. Exemplo no arquivo ITemplateFuncao.java
+   d. Factory
+    R: Entao não da pra usar Factory.. Brincadeira. Dá sim. Usaremos no mesmo local so pra dar uma variada. :D. Exemplo no arquivo IFactoryFuncao.java

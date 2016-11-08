@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * <p>
  * Também implementa a classe Comparable, para podermos utilizar esta classe no
  * {@link java.util.TreeSet}.
- *
+ * 
  * @author Adriano
  * @author Gustavo
  *
@@ -45,6 +45,20 @@ public class Dado implements Comparable {
     private boolean estadoEditando;
 
     /**
+     * Construtor da classe que recebe um {@link ArrayList} de {@link String}
+     * que são os dados da linha, e o número da linha.
+     *
+     * @param dado  são todos os dados da linha
+     * @param linha indica o numero da linha que o dado está
+     */
+    Dado ( ArrayList<String> dado, int linha ) {
+        dadosDaLinha = dado;
+        numeroLinha = linha;
+        foiDeletado = false;
+        estadoEditando = false;
+    }
+
+    /**
      * Função que retornará todos os dados contidos em nosso
      * {@link ArrayList} {@link Dado#dadosDaLinha}
      *
@@ -74,15 +88,6 @@ public class Dado implements Comparable {
     }
 
     /**
-     * Retorna se o dado esta ou não sendo editado
-     *
-     * @return estado do dado
-     */
-    public boolean taEditando () {
-        return estadoEditando;
-    }
-
-    /**
      * Altera o estado do dado para deletado ou não
      *
      * @param estado o novo estado do dado
@@ -90,27 +95,14 @@ public class Dado implements Comparable {
     public void setDeletado ( boolean estado ) {
         foiDeletado = estado;
     }
-    
-    /**
-     * Atualiza os dados
-     * @param valores novos dados
-     */
-    public void setValores ( ArrayList<String> valores ) {
-        dadosDaLinha = valores;
-    }
 
     /**
-     * Construtor da classe que recebe um {@link ArrayList} de {@link String}
-     * que são os dados da linha, e o número da linha.
+     * Retorna se o dado esta ou não sendo editado
      *
-     * @param dado  são todos os dados da linha
-     * @param linha indica o numero da linha que o dado está
+     * @return estado do dado
      */
-    Dado ( ArrayList<String> dado, int linha ) {
-        dadosDaLinha = dado;
-        numeroLinha = linha;
-        foiDeletado = false;
-        estadoEditando = false;
+    public boolean isEditando () {
+        return estadoEditando;
     }
 
     /**
@@ -119,8 +111,17 @@ public class Dado implements Comparable {
      *
      * @param estado estado de edição
      */
-    public void setEstadoEditando ( boolean estado ) {
+    public void setEditando ( boolean estado ) {
         estadoEditando = estado;
+    }
+
+    /**
+     * Atualiza os dados
+     *
+     * @param valores novos dados
+     */
+    public void setValores ( ArrayList<String> valores ) {
+        dadosDaLinha = valores;
     }
 
     @Override
@@ -140,4 +141,5 @@ public class Dado implements Comparable {
     public String toString () {
         return String.format ( "Dado na posição %d, possui %s", getNumeroLinha (), getDadosDaLinha () );
     }
+
 }

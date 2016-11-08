@@ -80,6 +80,30 @@ public class Escritor {
     }
 
     /**
+     * Inicia a operação de escrever os dados nos arquivos. Começa com o indice
+     * no comeco do arquivo e depois parte para o conteduo em si.
+     */
+    public void escreveDados () {
+
+        try ( Writer writer = new BufferedWriter ( new OutputStreamWriter ( new FileOutputStream ( ARQUIVO_INDENTADO ) ) ) ) {
+
+            escritorCabecalho ( writer );
+            writer.write ( "\n" );
+            escritorDados ( writer );
+            writer.close ();
+        }
+        catch ( UnsupportedEncodingException e ) {
+            e.printStackTrace ();
+        }
+        catch ( FileNotFoundException e ) {
+            e.printStackTrace ();
+        }
+        catch ( IOException e ) {
+            e.printStackTrace ();
+        }
+    }
+
+    /**
      * Realiza a escrita de uma string no arquivo de indice.
      *
      * @param writer          é o objeto usado para escrever no arquivo
@@ -120,30 +144,6 @@ public class Escritor {
 
             writer.write ( "\n" );
 
-        }
-    }
-
-    /**
-     * Inicia a operação de escrever os dados nos arquivos. Começa com o indice
-     * no comeco do arquivo e depois parte para o conteduo em si.
-     */
-    public void escreveDados () {
-
-        try ( Writer writer = new BufferedWriter ( new OutputStreamWriter ( new FileOutputStream ( ARQUIVO_INDENTADO ) ) ) ) {
-
-            escritorCabecalho ( writer );
-            writer.write ( "\n" );
-            escritorDados ( writer );
-            writer.close ();
-        }
-        catch ( UnsupportedEncodingException e ) {
-            e.printStackTrace ();
-        }
-        catch ( FileNotFoundException e ) {
-            e.printStackTrace ();
-        }
-        catch ( IOException e ) {
-            e.printStackTrace ();
         }
     }
 
